@@ -2,16 +2,35 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { applyMiddleware, createStore } from 'redux'
+import tasks from './store/reducers'
+import { Provider } from 'react-redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import thunk from 'redux-thunk';
+
+const store = createStore(tasks, composeWithDevTools(applyMiddleware(thunk)))
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+if (module.hot) {
+  module.hot.accept('./App', () => {
+    const NextApp = require('./App').default;
+    ReactDOM.render(
+      <Provider store={store}> <NextApp /> </Provider>,
+      document.getElementById('root')
+    )
+  })
+  module.hot.accept('./store/reducers', () => {
+    const nextRootReducer = require('./store/reducers').default;
+    store.replaceReducer(nextRootReducer);
+  })
+}
 root.render(
-  <React.StrictMode>
+  <Provider store={ store }>
     <App />
-  </React.StrictMode>
+  </Provider>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+/* Think of the Provider component as an enabler.
+You won’t interact with it directly often, typically only in a file such as index.js,
+which takes care of initially mounting the app to the DOM. Behind the scenes,
+Provider ensures you can use connect to pass data from the store to one or more React components. */
