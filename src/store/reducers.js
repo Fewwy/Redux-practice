@@ -1,35 +1,45 @@
-import { uniqueId } from "./actions";
-
-const mockTasks = [
-    {
-      id: uniqueId(),
-      title: 'Learn Redux',
-      description: 'The store, actions, and reducers, oh my!',
-      status: 'In Progress',
-    },
-    {
-      id: uniqueId(),
-      title: 'Peace on Earth',
-      description: 'No big deal.',
-      status: 'In Progress',
-    },
-  ];
-
-export default function tasks(state = { tasks: mockTasks }, action) {
-    if (action.type === 'CREATE_TASK') {
-      return { tasks: state.tasks.concat(action.payload) };
+export default function tasks(state = { tasks: [] }, action) {
+  switch (action.type) {
+    case 'CREATE_TASK': {
+      return {
+        tasks: state.tasks.concat(action.payload),
+      };
     }
-    if (action.type === 'EDIT_TASK') {
+    case 'EDIT_TASK': {
+      const {payload} = action;
+      return {
+        tasks: state.tasks.map(task => {
+          if (task.id === payload.id) {
+            return Object.assign({}, task, payload.params)
+          }
+          return task;
+        })
+      }
+    }
+    case 'FETCH_TASKS_SUCCEEDED': {
+      return {
+        tasks: action.payload.tasks
+      }
+    }
+    case 'CREATE_TASK_SUCCEDED': {
+      return {
+        tasks: state.tasks.concat(action.payload.task)
+      }
+    }
+    case 'EDIT_TASK_SUCCEDED': {
       const { payload } = action;
-    return {
-      tasks: state.tasks.map(task => {
-        if (task.id === payload.id) {
-          return Object.assign({}, task, payload.params)
-        }
-        return task;
-      })
-     }
-    }
+      return {
+        tasks: state.tasks.map(task => {
+          if (task.id === payload.task.id) {
+            return payload.task;
+          }
 
-    return state;
+          return task;
+        }),
+      }
+    }
+    default: {
+      return state;
+    }
   }
+}
