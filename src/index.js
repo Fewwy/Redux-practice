@@ -3,12 +3,17 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { applyMiddleware, createStore } from 'redux'
-import tasks from './store/reducers'
+import tasksReducer from './store/reducers'
 import { Provider } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 
-const store = createStore(tasks, composeWithDevTools(applyMiddleware(thunk)))
+const rootReducer = (state = {}, action) => {
+  return {
+    tasks: tasksReducer(state.tasks, action)
+  }
+}
+const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)))
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 if (module.hot) {

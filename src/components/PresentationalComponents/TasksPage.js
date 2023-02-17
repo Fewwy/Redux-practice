@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import TaskList from './TaskList';
-const TASK_STATUSES = ['Unstarted', 'In Progress', 'Completed']
-
+const TASK_STATUSES = ['Unstarted', 'In Progress', 'Completed'];
 
 class TasksPage extends Component {
   constructor(props) {
@@ -10,17 +9,17 @@ class TasksPage extends Component {
       showNewCardForm: false,
       title: '',
       description: '',
-      status: 'Unstarted'
+      status: 'Unstarted',
     };
   }
 
   onTitleChange = (e) => {
     this.setState({ title: e.target.value });
-  }
+  };
 
   onDescriptionChange = (e) => {
     this.setState({ description: e.target.value });
-  }
+  };
 
   resetForm() {
     this.setState({
@@ -29,7 +28,6 @@ class TasksPage extends Component {
       description: '',
     });
   }
-
   onCreateTask = (e) => {
     e.preventDefault();
     this.props.onCreateTask({
@@ -37,16 +35,16 @@ class TasksPage extends Component {
       description: this.state.description,
     });
     this.resetForm();
-  }
+  };
 
   toggleForm = () => {
     this.setState({ showNewCardForm: !this.state.showNewCardForm });
-  }
+  };
 
   renderTaskLists() {
-    const { tasks } = this.props;
-    return TASK_STATUSES.map(status => {
-      const statusTasks = tasks.filter(task => task.status === status);
+    const { tasks } = this.props.tasks;
+    return TASK_STATUSES.map((status) => {
+      const statusTasks = tasks.filter((task) => task.status === status);
       return (
         <TaskList
           key={status}
@@ -59,48 +57,43 @@ class TasksPage extends Component {
   }
 
   render() {
-    return (
-      <div className="task-list">
-        <div className="task-list-header">
-          <button
-            className="button button-default"
-            onClick={this.toggleForm}
-          >
-            + New task
-          </button>
-        </div>
-        {this.state.showNewCardForm && (
-          <form className="task-list-form" onSubmit={this.onCreateTask}>
-            <input
-              className="full-width-input"
-              onChange={this.onTitleChange}
-              value={this.state.title}
-              type="text"
-              placeholder="title"
-            />
-            <input
-              className="full-width-input"
-              onChange={this.onDescriptionChange}
-              value={this.state.description}
-              type="text"
-              placeholder="description"
-            />
-            <button
-              className="button"
-              type="submit"
-            >
-              Save
+    if (this.props.isLoading) {
+      return <div className="tasks-loading">Loading...</div>;
+    } else {
+      return (
+        <div className="task-list">
+          <div className="task-list-header">
+            <button className="button button-default" onClick={this.toggleForm}>
+              + New task
             </button>
-          </form>
-        )}
+          </div>
+          {this.state.showNewCardForm && (
+            <form className="task-list-form" onSubmit={this.onCreateTask}>
+              <input
+                className="full-width-input"
+                onChange={this.onTitleChange}
+                value={this.state.title}
+                type="text"
+                placeholder="title"
+              />
+              <input
+                className="full-width-input"
+                onChange={this.onDescriptionChange}
+                value={this.state.description}
+                type="text"
+                placeholder="description"
+              />
+              <button className="button" type="submit">
+                Save
+              </button>
+            </form>
+          )}
 
-        <div className="task-lists">
-          {this.renderTaskLists()}
+          <div className="task-lists">{this.renderTaskLists()}</div>
         </div>
-      </div>
-    );
+      );
+    }
   }
 }
 
 export default TasksPage;
-
